@@ -3,6 +3,7 @@ package edu.cnm.deepdive.viewmodel;
 import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import edu.cnm.deepdive.model.Quote;
@@ -12,10 +13,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import java.util.List;
 
-public class MainViewModel extends AndroidViewModel {
+public class MainViewModel extends AndroidViewModel implements LifecycleObserver {
 
   private MutableLiveData<Quote> random;
-  private MutableLiveData<List<Quote>> search;
+  private MutableLiveData<List<Quote>> quoteSearch;
 
   private CompositeDisposable pending = new CompositeDisposable();
 
@@ -36,16 +37,23 @@ public class MainViewModel extends AndroidViewModel {
     return random;
   }
 
-  public MutableLiveData<List<Quote>> getSearchQuote () {
-    if (search == null) {
-      search = new MutableLiveData<>();
+  public LiveData<List<Quote>> quoteSearch () {
+    if (quoteSearch == null) {
+      quoteSearch = new MutableLiveData<>();
     }
-    pending.add(
-        QodService.getInstance().search(search.toString())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe((quote) -> search.setValue(quote))
-    );
-    return search;
+    if (quoteSearch != null) {
+      pending.add(
+          QodService.getInstance().search(quoteSearch.toString())
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe((quote) -> quoteSearch.setValue(quote))
+      );
+    } else {
+
+    }
+      return quoteSearch;
+    }
+
   }
-}
+
+

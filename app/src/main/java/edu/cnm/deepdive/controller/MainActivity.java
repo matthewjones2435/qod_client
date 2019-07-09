@@ -45,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
     setupToolbar();
     setupFab();
     setupViewModel();
-    setupListView();
-    setupSearchButton();
   }
 
   private void setupViewModel() {
@@ -61,21 +59,11 @@ public class MainActivity extends AppCompatActivity {
           .create();
       dialog.show();
     });
+    viewModel.quoteSearch().observe(this,(quotes ->
+        ArrayAdapter<Quote> adapter = new ArrayAdapter<>(
+            this, android.R.layout.simple_list_item_1)
+        ));
   }
-
-    private void setupListView() {
-    View listView = findViewById(R.id.list);
-    viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-    viewModel.getSearchQuote().observe(this, (searchedQuote) -> {
-      ArrayAdapter<Quote> adapter = new ArrayAdapter<Quote>
-          (this,android.R.layout.simple_list_item_1,searchedQuote);
-    });
-  }
-    private void setupSearchButton() {
-    ImageButton searchButton = findViewById(R.id.search_button);
-    searchButton.setOnClickListener
-        ((search) -> viewModel.getSearchQuote());
-    }
 
 
     private void setupFab() {
